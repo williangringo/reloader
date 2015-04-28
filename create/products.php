@@ -248,10 +248,6 @@ if ($timesConfigurable > 0) {
             ->setCategoryIds($categories, $faker->randomDigitNotNull);
 
         $productConfigurable->getTypeInstance()->setUsedProductAttributeIds($_attributesIds);
-        $configurableAttributesData = $productConfigurable->getTypeInstance()->getConfigurableAttributesAsArray();
-
-        $productConfigurable->setCanSaveConfigurableAttributes(true);
-        $productConfigurable->setConfigurableAttributesData($configurableAttributesData);
 
         $flatten = function ( & $combines) use ( & $flatten) {
             $current = pos($combines);
@@ -279,12 +275,15 @@ if ($timesConfigurable > 0) {
         };
 
         $flattenAttributesOptions = $flatten($attributesOptions);
+        $flattenAttributesOptions = count($flattenAttributesOptions) > 5 ? array_slice($flattenAttributesOptions, 0, 5) : $flattenAttributesOptions;
 
         $configurableProductsData = [];
+        $configurableAttributesData = [];
 
         foreach ($flattenAttributesOptions as $options) {
             try {
                 $simpleProductData = [];
+                $simpleAttributeData = [];
 
                 $productSimple4Configurable = Mage::getModel('catalog/product');
 
@@ -378,18 +377,19 @@ if ($timesConfigurable > 0) {
                         continue;
                     }
 
-                    $simpleProductData['label'] = $option;
-                    $simpleProductData['attribute_id'] = $attribute->getId();
-                    $simpleProductData['is_percent'] = '0';
-                    $simpleProductData['pricing_value'] = '0';
-                    $simpleProductData['value_index'] = $valueIndex;
+                    $simpleProductData[] = [
+                        'attribute_id' => $attribute->getId(),
+                        'label' => $option,
+                        'is_percent' => 0,
+                        'pricing_value' => '',
+                        'value_index' => $valueIndex
+                    ];
 
                     $productSimple4Configurable->{'set'.$key}($option);
                 }
 
-                if ($id = $productSimple4Configurable->save()) {
-                    $configurableProductsData[$id][] = $simpleProductData;
-                }
+                $productSimple4Configurable->save();
+                $configurableProductsData[$productSimple4Configurable->getId()] = $simpleProductData;
             } catch (Exception $e) {
                 var_dump($e->getMessage());
                 continue;
@@ -397,6 +397,8 @@ if ($timesConfigurable > 0) {
         }
 
         $productConfigurable->setConfigurableProductsData($configurableProductsData);
+        $productConfigurable->setCanSaveConfigurableAttributes(true);
+
         $productConfigurable->save();
     }
 }
