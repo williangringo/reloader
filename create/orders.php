@@ -63,8 +63,8 @@ for ($i = 0; $i < $times; $i++) {
             $_productsIds[] = $product->getId();
         }
 
-        foreach (range(1, $faker->numberBetween(2, 20)) as $range) {
-            $product = Mage::getModel('catalog/product')->load($faker->randomElement($_productsIds));
+        foreach (range(1, $faker->numberBetween(2, count($_productsIds))) as $range) {
+            $product = Mage::getModel('catalog/product')->load($faker->unique()->randomElement($_productsIds));
             $stock = $product->getStockItem();
 
             if (!$stock->getIsInStock()) {
@@ -78,6 +78,8 @@ for ($i = 0; $i < $times; $i++) {
             $buyInfo = ['qty' => $qty];
             $quote->addProduct($product, new Varien_Object($buyInfo));
         }
+
+        $faker->unique(true);
 
         $addressData = array(
             'firstname' => $customer->getFirstname(),
