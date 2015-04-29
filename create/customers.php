@@ -17,6 +17,7 @@ for ($i = 0; $i < $times; $i++) {
         ->setFirstname($faker->unique()->firstName())
         ->setLastname($faker->lastName)
         ->setEmail($faker->email)
+        ->setTaxvat($faker->randomElement([$faker->unique()->numerify('###.###.###-##'), $faker->unique()->numerify('##.###.###/0001-##')]))
         ->setPassword('123456');
 
     try {
