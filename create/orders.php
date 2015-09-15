@@ -60,9 +60,11 @@ for ($i = 0; $i < $times; $i++) {
         
         $products = mage::getModel('catalog/product')
             ->getCollection()
-            ->addAttributeToSelect('id')
-            ->setPageSize($numberOfProducts)
-            ->setCurPage(1);
+            ->addAttributeToSelect('id');
+            
+        $products->getSelect()
+            ->limit($numberOfProducts)
+            ->order(new Zend_Db_Expr('RAND()'));
 
         $_productsIds = [];
         foreach ($products as $product) {
