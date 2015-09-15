@@ -61,7 +61,7 @@ for ($i = 0; $i < $times; $i++) {
         $products = mage::getModel('catalog/product')
             ->getCollection()
             ->addAttributeToSelect('id')
-            >setPageSize($numberOfProducts)
+            ->setPageSize($numberOfProducts)
             ->setCurPage(1);
 
         $_productsIds = [];
