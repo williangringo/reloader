@@ -56,14 +56,22 @@ for ($i = 0; $i < $times; $i++) {
             //$quote->setCustomerEmail('customer@example.com');
         }
 
-        $_productsIds = [];
-        $products = mage::getModel('catalog/product')->getCollection()->addAttributeToSelect('id');
+        $numberOfProducts = $faker->numberBetween(2, 20);
+        
+        $products = mage::getModel('catalog/product')
+            ->getCollection()
+            ->addAttributeToSelect('id')
+            >setPageSize($numberOfProducts)
+            ->setCurPage(1);
 
+        $_productsIds = [];
         foreach ($products as $product) {
             $_productsIds[] = $product->getId();
         }
-
-        foreach (range(1, $faker->numberBetween(2, count($_productsIds))) as $range) {
+        
+        $productsIdsRange = range(1, $numberOfProducts);
+        
+        foreach ($productsIdsRange as $range) {
             $product = Mage::getModel('catalog/product')->load($faker->unique()->randomElement($_productsIds));
             $stock = $product->getStockItem();
 
